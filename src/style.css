@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #aae5ec;
+    font-family:'Arial';
+  }
+  
+  h1 {
+    color: navy;
+    margin-left: 20px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  label span {
+    font-family:'Comfortaa-Regular';
+    font-size:14px;
+    vertical-align:text-top;
+  }
+
+  button {
+    font-family:'Comfortaa-Regular';
+  }
+
+  input {
+    font-family:'Comfortaa-Regular';
+    width: 40px;
+  }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
