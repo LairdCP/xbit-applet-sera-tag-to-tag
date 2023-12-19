@@ -63,7 +63,11 @@ export function parseLtvs (fullAd) {
     }
     const t = fullAd.substr(i + 2, 2)
     const v = hexToBytes(fullAd.substr(i + 4, tlen * 2))
-    map[t] = v
+    if (map[t]) {
+      map[t].push(v)
+    } else {
+      map[t] = [v]
+    }
     i += 2 + tlen * 2
   }
   return map

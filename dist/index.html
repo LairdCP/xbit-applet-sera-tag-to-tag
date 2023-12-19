@@ -1,60 +1,64 @@
 <html>
   <head>
     <!-- $css CSS Style will be injected here -->
-    <script type="module" crossorigin src="./assets/index-Ib_pXm42.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Ts9jl-o8.css">
+    <script type="module" crossorigin src="./assets/index-0vibLVQt.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-5HLzRTpG.css">
   </head>
   
   <body style="margin: 0; background-color: black;">
     <div id="main-canvas">
       <canvas id="p5-canvas"></canvas>
     </div>
+
     <div id="floating-buttons" class="bg-canvas-slate-800 text-gray-400">
       <div id="alert-text" class="bg-yellow-500 text-canvas-slate-800" style="display: none; position: relative; top: 0; padding: 0 6px"></div>
-      <div class="flex items-center">
-        <div class="canvas-ui-group flex items-center flex-col">
-          <button id="start-scan" class="canvas-button bg-canvas-slate-600 text-gray-100">Start Scan</button>
-          <button id="lock-anchors" class="canvas-button bg-canvas-slate-600 text-gray-100">Lock Anchors</button>
+      <div class="flex items-center flex-col sm:flex-row" style="align-items: stretch;">
+        <div class="canvas-ui-group flex items-center flex-row sm:flex-col mx-0 grow">
+          <button id="start-scan" class="canvas-button bg-canvas-slate-600 text-gray-100 mb-1">Start Scan</button>
+          <button id="lock-anchors" class="canvas-button bg-canvas-slate-600 text-gray-100 mb-1">Lock Anchors</button>
+          <button id="toggleExtras" class="canvas-button bg-canvas-slate-600 text-gray-100 mb-1">Show More</button>
         </div>
-        <div class="canvas-ui-group flex items-center flex-col">
-          <div class="canvas-input">
-            <input type="number" id="roomHeightInput" style="width: 60px"> Height <span class="units"></span>
+        <div class="canvas-ui-group flex items-center flex-row sm:flex-col mx-0 grow">
+          <div class="canvas-input grow">
+            <input type="number" id="roomHeightInput"> Height <span class="units"></span>
           </div>
-          <div class="canvas-input">
-            <input type="number" id="roomWidthInput" style="width: 60px"> Width <span class="units"></span>
+          <div class="canvas-input grow">
+            <input type="number" id="roomWidthInput"> Width <span class="units"></span>
           </div>
-          <div class="canvas-input">
-            <input type="number" id="roomDepthInput" style="width: 60px"> Depth <span class="units"></span>
+          <div class="canvas-input grow">
+            <input type="number" id="roomDepthInput"> Depth <span class="units"></span>
           </div>
         </div>
-        <div class="canvas-ui-group flex items-center flex-col">
-          <button id="toggle-units" class="canvas-button bg-canvas-slate-600 text-gray-100">Units FT</button>
+        <div class="canvas-ui-group flex items-center flex-row sm:flex-col mx-0 grow">
+          <button id="toggle-units" class="canvas-button bg-canvas-slate-600 text-gray-100 mb-1">Units FT</button>
           <div class="canvas-input" title="Accuracy in positioning. (min 4cm)">
             <input type="number" id="closeEnoughDistance" style="width: 60px"> Accuracy (cm)
           </div>
         </div>
-        <div class="canvas-ui-group flex items-center flex-wrap">
-          <div class="canvas-slider">
-            <label for="roomOrientationYSlider" class="block">Rotate</label>
-            <input type="range" id="roomOrientationYSlider" class="block" min="0" max="11" step="0.1" style="width: 120px"/>
+        <div id="extrasOne" class="canvas-ui-group items-center flex-row flex mx-0 grow">
+          <div class="canvas-ui-group items-center flex-wrap flex-col flex mx-0">
+            <div class="canvas-slider">
+              <label for="roomOrientationYSlider" class="block">Rotate</label>
+              <input type="range" id="roomOrientationYSlider" class="block" min="0" max="11" step="0.1" style="width: 100px"/>
+            </div>
+            <div class="canvas-slider">
+              <label for="roomOrientationXSlider" class="block">Shift X</label>
+              <input type="range" id="roomOrientationXSlider" class="block" min="0" max="6" step="0.1" style="width: 100px"/>
+            </div>
+            <div class="canvas-slider">
+              <label for="roomOrientationZSlider" class="block">Shift Z</label>
+              <input type="range" id="roomOrientationZSlider" class="block" min="0" max="6" step="0.1" style="width: 100px"/>
+            </div>
           </div>
-          <div class="canvas-slider">
-            <label for="roomOrientationXSlider" class="block">Shift X</label>
-            <input type="range" id="roomOrientationXSlider" class="block" min="0" max="6" step="0.1" style="width: 120px"/>
-          </div>
-          <div class="canvas-slider">
-            <label for="roomOrientationZSlider" class="block">Shift Z</label>
-            <input type="range" id="roomOrientationZSlider" class="block" min="0" max="6" step="0.1" style="width: 120px"/>
+          <div class="canvas-ui-group items-center flex-row sm:flex-col sm:flex mx-0">
+            <button id="flip-anchors-x" class="canvas-button bg-canvas-slate-600 text-gray-100 mb-1">Flip Anchors X</button>
+            <button id="flip-anchors-z" class="canvas-button bg-canvas-slate-600 text-gray-100 mb-1">Flip Anchors Z</button>
           </div>
         </div>
-        <div class="canvas-ui-group flex items-center flex-col">
-          <button id="flip-anchors-x" class="canvas-button bg-canvas-slate-600 text-gray-100">Flip Anchors X</button>
-          <button id="flip-anchors-z" class="canvas-button bg-canvas-slate-600 text-gray-100">Flip Anchors Z</button>
-        </div>
-        <div class="canvas-ui-group flex items-center flex-col">
-          <button id="toggle-overlay" class="canvas-button bg-canvas-slate-600 text-gray-100"></button>
-          <button id="show-range-spheres" class="canvas-button bg-canvas-slate-600 text-gray-100">Show Range Spheres</button>
-          <button id="tags-below-anchors" class="canvas-button bg-canvas-slate-600 text-gray-100">Tags Below Anchors</button>
+        <div id="extrasThree" class="canvas-ui-group items-center flex-col flex mx-0 grow">
+          <button id="toggle-overlay" class="canvas-button bg-canvas-slate-600 text-gray-10 mb-1"></button>
+          <button id="show-range-spheres" class="canvas-button bg-canvas-slate-600 text-gray-100 mb-1">Show Range Spheres</button>
+          <button id="tags-below-anchors" class="canvas-button bg-canvas-slate-600 text-gray-100 mb-1">Tags Below Anchors</button>
         </div>
       </div>
     </div>

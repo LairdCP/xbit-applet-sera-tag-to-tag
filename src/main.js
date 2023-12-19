@@ -688,6 +688,7 @@ const s = (sketch) => {
     sketch.resizeCanvas(AppState.viewport.width, AppState.viewport.height)
 
     const result = setupBuffer3d()
+    AppState.buffer3d.remove()
     AppState.buffer3d = result.buffer3d
     addScreenPositionFunction(AppState.buffer3d)
     AppState.gl = result.gl
@@ -795,16 +796,15 @@ const myp5 = new p5(s) // eslint-disable-line no-unused-vars, new-cap
 // recieve events from the backend
 const eventListenerHandler = (data) => {
   // if (!AppState.scanButton.state) return
-  if (data.method === 'data' && data.params?.data) {
-    if (!AppState.scanButton.state && data.params.data.indexOf('AD=') >= 0) {
+  if (!AppState.scanButton.state) {
       AppState.scanButton.setOn()
-    }
-    if (AppState.scanButton.state) {
-      TagScene.handleAd(data.params.data)
-    }
+  }
+  if (AppState.scanButton.state) {
+    TagScene.handleAd(data.params.ad)
   }
 }
-xbit.addEventListener(eventListenerHandler)
+
+xbit.addEventListener('bluetoothDeviceDiscovered', eventListenerHandler)
 
 window.onunload = () => {
   xbit.removeEventListener(eventListenerHandler)
