@@ -34,60 +34,6 @@ export function setupBuffer3d () {
   return { buffer3d, gl, cam }
 }
 
-export function toHexString (bytes) {
-  return Array.from(bytes, (byte) => {
-    return ('0' + (byte & 0xff).toString(16)).slice(-2)
-  }).join('')
-}
-
-export function hexToBytes (hex) {
-  const bytes = []
-
-  for (let c = 0; c < hex.length; c += 2) {
-    bytes.push(parseInt(hex.substr(c, 2), 16))
-  }
-
-  return bytes
-}
-
-export function parseLtvs (fullAd) {
-  const map = {}
-  let i = 0
-
-  fullAd = fullAd.toLowerCase()
-
-  while (i < fullAd.length) {
-    const tlen = parseInt(fullAd.substr(i, 2), 16)
-    if (tlen <= 0) {
-      return map
-    }
-    const t = fullAd.substr(i + 2, 2)
-    const v = hexToBytes(fullAd.substr(i + 4, tlen * 2))
-    if (map[t]) {
-      map[t].push(v)
-    } else {
-      map[t] = [v]
-    }
-    i += 2 + tlen * 2
-  }
-  return map
-}
-
-export function hasLtv (ltvTypeStr, dataPrefix, ltvMap) {
-  if (ltvMap[ltvTypeStr]) {
-    const v = ltvMap[ltvTypeStr]
-    if (v) {
-      for (let i = 0; i < dataPrefix.length; i++) {
-        if (v[i] !== dataPrefix[i]) {
-          return false
-        }
-      }
-      return true
-    }
-  }
-  return false
-}
-
 export function styleButton (btn) {
   btn.style('color:#fff')
   btn.style('background:#333')

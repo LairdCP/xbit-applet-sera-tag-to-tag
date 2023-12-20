@@ -386,15 +386,17 @@ const s = (sketch) => {
     AppState.scanButton.button.addEventListener('click', () => {
       AppState.scanButton.toggle()
       if (AppState.scanButton.state) {
-        xbit.sendBluetoothStartScanningCommand().then(() => {
-          console.log('start scanning command sent')
+        xbit.sendStartBluetoothScanningCommand().then(() => {
         }).catch((err) => {
           console.log('error sending start scanning command', err)
           AppState.scanButton.toggle()
         })
       } else {
-        xbit.sendBluetoothStopScanningCommand().then(() => {
-          console.log('stop scanning command sent')
+        AppState.scanStopping = true
+        xbit.sendStopBluetoothScanningCommand().then(() => {
+          setTimeout(() => {
+            AppState.scanStopping = false
+          }, 1000)
         }).catch((err) => {
           console.log('error sending stop scanning command', err)
           AppState.scanButton.toggle()
@@ -796,11 +798,11 @@ const myp5 = new p5(s) // eslint-disable-line no-unused-vars, new-cap
 // recieve events from the backend
 const eventListenerHandler = (data) => {
   // if (!AppState.scanButton.state) return
-  if (!AppState.scanButton.state) {
+  if (!AppState.scanButton.state && !AppState.scanStopping) {
       AppState.scanButton.setOn()
   }
   if (AppState.scanButton.state) {
-    TagScene.handleAd(data.params.ad)
+    TagScene.handleAd(data.params)
   }
 }
 

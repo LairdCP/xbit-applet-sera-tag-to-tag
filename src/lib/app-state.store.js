@@ -10,6 +10,7 @@ export default class {
   static sketch = null
   static mobileTagIntersections = {} // used for 3D positioning
   static closeEnoughDistance = 20 // cm
+  static scanStopping = false
   static sphereSolution = (o) => {
     return this.sphereSolutionOption === o || this.sphereSolutionOption === 'both'
   }

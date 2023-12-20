@@ -6,13 +6,7 @@ import { Tag } from './tag.class.js'
 import { TagDb } from './tag-db.js'
 import { Units } from './units.js'
 import AppState from './app-state.store.js'
-
-import {
-  parseLtvs,
-  hasLtv,
-  toHexString
-} from './index.js'
-// import AppState from './lib/app-state.store.js'
+import { bytesToHex, parseManufacturerData, parseLtvs, hasLtv } from '@bennybtl/xbit-lib'
 
 export default {
   addMobileTag,
@@ -21,18 +15,27 @@ export default {
   handleAd
 }
 
-export function handleAd (ad) {
-  if (!ad) return
-  const vals = ad.trim().split(',')
-  const v = Ble.getValFromAdString('AD', vals)
+export function handleAd ({ deviceId, ad }) {
+  if (ad) {
+    const hexAd = bytesToHex(ad)
+    const ltvMap = parseLtvs(hexAd)
+    let parsedAd = null
 
-  if (v) {
+    try {
+      if (ltvMap.ff) {
+        parseManufacturerData(ltvMap.ff).forEach((data) => {
+          parsedAd = Object.assign(parsedAd || {}, data)
+        })
+      }
+    } catch (e) {
+      // console.log(e)
+    }
+
     // Check for Laird mfg id and BT510 tilt sensor protocol ID (0xc9)
-    const ltvMap = parseLtvs(v)
-    if (hasLtv('ff', [0x77, 0x00, 0x0c, 0x00], ltvMap)) {
+    const ffLtv = hasLtv('ff', [0x77, 0x00, 0x0c, 0x00], ltvMap)
+    if (ffLtv) {
       let tag
       // Check to see if this is a new UWB tag
-      let deviceId = Ble.getValFromAdString('DID', vals)
       if (!deviceId) return
       if (deviceId.length > 13) {
         deviceId = deviceId.substr(2, 12)
@@ -49,10 +52,10 @@ export function handleAd (ad) {
         // tag.setColorIndex(TagDb.tags.length - 1);
         tag.setColorIndex(3)
         tag.position = tagPos
-        updateMobileTag(deviceId, ltvMap)
-        console.log('Added tag [' + tag.shortAddr + '] [BLE: ' + deviceId + '] [ID:' + toHexString(tag.longAddr) + ']')
+        updateMobileTag(deviceId, ffLtv)
+        console.log('Added tag [' + tag.shortAddr + '] [BLE: ' + deviceId + '] [ID:' + bytesToHex(tag.longAddr) + ']')
       } else {
-        updateMobileTag(deviceId, ltvMap)
+        updateMobileTag(deviceId, ffLtv)
         TagDb.updateSensorLastSeen(deviceId)
       }
       // TODO: update the database from this ad
@@ -72,7 +75,7 @@ function addMobileTag (deviceId) {
   return tag
 }
 
-function updateMobileTag (deviceId, ltvMap) {
+function updateMobileTag (deviceId, ffLtv) {
   let tag = null
   for (let i = 0; i < TagDb.tags.length; i++) {
     if (TagDb.tags[i].deviceId === deviceId) {
@@ -81,14 +84,14 @@ function updateMobileTag (deviceId, ltvMap) {
     }
   }
   if (!tag) return
-  const v = ltvMap.ff
+  const v = ffLtv
 
   if (!tag.longAddr) {
     tag.longAddr = []
     for (let i = 8; i < 16; i++) {
       tag.longAddr.push(v[i])
     }
-    tag.shortAddr = toHexString(tag.longAddr).substring(12)
+    tag.shortAddr = bytesToHex(tag.longAddr).substring(12)
   }
 
   // parse the ranging records starting at byte 20
@@ -116,7 +119,7 @@ function updateMobileTag (deviceId, ltvMap) {
       case 0: // ranging record type
         dist = (records[i].bytes[2] << 8) | records[i].bytes[3]
         if (dist !== 65535) {
-          tag.addRange(toHexString([records[i].bytes[0], records[i].bytes[1]]), dist)
+          tag.addRange(bytesToHex([records[i].bytes[0], records[i].bytes[1]]), dist)
         }
         break
       case 10: // LED color type
