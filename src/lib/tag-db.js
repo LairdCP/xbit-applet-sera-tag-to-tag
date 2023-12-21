@@ -32,18 +32,18 @@ export class TagDb {
     return null
   }
 
-  static isSensorFound (deviceId) {
+  static isSensorFound (deviceAddress) {
     for (const s of TagDb.tagsFound) {
-      if (s.deviceId === deviceId) {
+      if (s.deviceAddress === deviceAddress) {
         return true
       }
     }
     return false
   }
 
-  static updateSensorLastSeen (deviceId) {
+  static updateSensorLastSeen (deviceAddress) {
     for (const s of TagDb.tagsFound) {
-      if (s.deviceId === deviceId) {
+      if (s.deviceAddress === deviceAddress) {
         s.lastSeen = Date.now()
         return
       }

@@ -5,7 +5,7 @@ import { TagDb } from './tag-db.js'
 
 export class Tag {
   name
-  deviceId = ''
+  deviceAddress = ''
   role
   longAddr
   shortAddr

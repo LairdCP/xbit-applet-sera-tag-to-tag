@@ -15,7 +15,7 @@ export default {
   handleAd
 }
 
-export function handleAd ({ deviceId, ad }) {
+export function handleAd ({ deviceAddress, ad }) {
   if (ad) {
     const hexAd = bytesToHex(ad)
     const ltvMap = parseLtvs(hexAd)
@@ -36,27 +36,27 @@ export function handleAd ({ deviceId, ad }) {
     if (ffLtv) {
       let tag
       // Check to see if this is a new UWB tag
-      if (!deviceId) return
-      if (deviceId.length > 13) {
-        deviceId = deviceId.substr(2, 12)
+      if (!deviceAddress) return
+      if (deviceAddress.length > 13) {
+        deviceAddress = deviceAddress.substr(2, 12)
       } else {
         return
       }
 
       const now = Date.now()
-      if (!TagDb.isSensorFound(deviceId)) {
-        TagDb.tagsFound.push({ deviceId, lastSeen: now })
+      if (!TagDb.isSensorFound(deviceAddress)) {
+        TagDb.tagsFound.push({ deviceAddress, lastSeen: now })
 
         const tagPos = { x: Math.sin((Math.PI / 2) + (20 * Math.PI / (TagDb.tagsFound.length + 1))) * Units.toCm(6), y: 5, z: Math.cos((Math.PI / 2) + (20 * Math.PI / (TagDb.tagsFound.length + 1))) * Units.toCm(6) }
-        tag = addMobileTag(deviceId)
+        tag = addMobileTag(deviceAddress)
         // tag.setColorIndex(TagDb.tags.length - 1);
         tag.setColorIndex(3)
         tag.position = tagPos
-        updateMobileTag(deviceId, ffLtv)
-        console.log('Added tag [' + tag.shortAddr + '] [BLE: ' + deviceId + '] [ID:' + bytesToHex(tag.longAddr) + ']')
+        updateMobileTag(deviceAddress, ffLtv)
+        console.log('Added tag [' + tag.shortAddr + '] [BLE: ' + deviceAddress + '] [ID:' + bytesToHex(tag.longAddr) + ']')
       } else {
-        updateMobileTag(deviceId, ffLtv)
-        TagDb.updateSensorLastSeen(deviceId)
+        updateMobileTag(deviceAddress, ffLtv)
+        TagDb.updateSensorLastSeen(deviceAddress)
       }
       // TODO: update the database from this ad
     }
@@ -64,21 +64,21 @@ export function handleAd ({ deviceId, ad }) {
 }
 
 const defaultTagRadius = Units.toCm(0.5)
-function addMobileTag (deviceId) {
+function addMobileTag (deviceAddress) {
   const tag = new Tag(String.fromCharCode('A'.charCodeAt(0) + TagDb.tags.length),
     { x: 50, y: 50, z: 0 }, defaultTagRadius, 'mobile', 3)
-  if (deviceId) {
-    tag.deviceId = deviceId
+  if (deviceAddress) {
+    tag.deviceAddress = deviceAddress
   }
   TagDb.tags.push(tag)
   AppState.dataChanged = true
   return tag
 }
 
-function updateMobileTag (deviceId, ffLtv) {
+function updateMobileTag (deviceAddress, ffLtv) {
   let tag = null
   for (let i = 0; i < TagDb.tags.length; i++) {
-    if (TagDb.tags[i].deviceId === deviceId) {
+    if (TagDb.tags[i].deviceAddress === deviceAddress) {
       tag = TagDb.tags[i]
       break
     }
