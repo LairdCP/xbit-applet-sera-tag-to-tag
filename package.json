@@ -1,7 +1,7 @@
 {
   "title": "Sera NX040 Tag-to-Tag",
   "name": "sera-tag-to-tag",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Demonstrates Sera NX040 Ranging",
   "config": {
     "full_description": "Demonstrates Sera NX040 Ranging between 2 or more tags. Tags must be configured in anchor mode 1. Setting a custom LED color will be reflected in the 3D visualization.",

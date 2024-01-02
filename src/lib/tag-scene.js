@@ -37,11 +37,11 @@ export function handleAd ({ deviceAddress, ad }) {
       let tag
       // Check to see if this is a new UWB tag
       if (!deviceAddress) return
-      if (deviceAddress.length > 13) {
-        deviceAddress = deviceAddress.substr(2, 12)
-      } else {
-        return
-      }
+      // if (deviceAddress.length > 13) {
+      //   deviceAddress = deviceAddress.substr(2, 12)
+      // } else {
+      //   return
+      // }
 
       const now = Date.now()
       if (!TagDb.isSensorFound(deviceAddress)) {
