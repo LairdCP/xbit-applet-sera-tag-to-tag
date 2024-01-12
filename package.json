@@ -1,17 +1,17 @@
 {
   "title": "Sera NX040 Tag-to-Tag",
   "name": "sera-tag-to-tag",
-  "version": "1.4.3",
-  "description": "Demonstrates Sera NX040 Ranging",
+  "version": "1.4.4",
+  "description": "3D Ranging Demo",
   "config": {
-    "full_description": "Demonstrates Sera NX040 Ranging between 2 or more tags. Tags must be configured in anchor mode 1. Setting a custom LED color will be reflected in the 3D visualization.",
+    "full_description": "A 3D visualization for display of ranging session data between 2 or more Sera NX040 DVK boards. Sera NX040 DVK boards must be programmed with the uwb_ranging_demo script from the Canvas Python Sample Apps repository. If fewer than 4 DVKs are used, the 3D position is arbitrarily chosen for display purposes only.",
     "icon": "icon.png",
     "image": "screenshot.png"
   },
   "main": "dist/index.html",
   "author": "Scott Lederer",
   "dependencies": {
-    "@bennybtl/xbit-lib": "^1.0.11",
+    "@bennybtl/xbit-lib": "^1.0.14",
     "@fortawesome/fontawesome-free": "^6.5.0",
     "p5": "1.6.0"
   },
