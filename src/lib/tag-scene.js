@@ -232,7 +232,7 @@ export function updateTagPositions () {
             fixedTags[1].getX(), fixedTags[1].getZ(), Units.getDistanceBetweenTags(t, fixedTags[1], false))
           if (intersectionPoints && intersectionPoints.length === 2 && !isNaN(intersectionPoints[0].x) && !isNaN(intersectionPoints[0].y) && !isNaN(intersectionPoints[1].x) && !isNaN(intersectionPoints[1].y)) {
             AppState.alertText = ''
-            if (AppState.tagsBelowAnchors) {
+            if (AppState.tagsAboveAnchors) {
               if (intersectionPoints[0].x > intersectionPoints[1].x) {
                 t.position.x = intersectionPoints[0].x
                 t.position.y = fixedTags[0].getY()

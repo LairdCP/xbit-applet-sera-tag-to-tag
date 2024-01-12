@@ -26,7 +26,7 @@ function setDotNotHelper (helper) { // eslint-disable-line no-unused-vars
 AppState.dataChanged = false
 AppState.grid = null
 AppState.showRangeSpheres = false
-AppState.tagsBelowAnchors = true
+AppState.tagsAboveAnchors = false
 AppState.cameraYShift = -100
 
 AppState.scanButton = new ToggleButton('start-scan', 'Stop Scan', 'Start Scan', ['fa-spinner', 'fa-spin-pulse'], 'fa-wifi', false)
@@ -412,7 +412,7 @@ const s = (sketch) => {
         flipAnchorsXButton.enable()
         flipAnchorsZButton.enable()
         showRangeSpheres.enable()
-        tagsBelowAnchors.enable()
+        tagsAboveAnchors.enable()
         roomOrientationYSlider.disabled = false
         roomOrientationXSlider.disabled = false
         roomOrientationZSlider.disabled = false
@@ -421,7 +421,7 @@ const s = (sketch) => {
         flipAnchorsXButton.disable()
         flipAnchorsZButton.disable()
         showRangeSpheres.disable()
-        tagsBelowAnchors.disable()
+        tagsAboveAnchors.disable()
         roomOrientationYSlider.disabled = true
         roomOrientationXSlider.disabled = true
         roomOrientationZSlider.disabled = true
@@ -451,17 +451,17 @@ const s = (sketch) => {
       AppState.dataChanged = true
     })
 
-    const tagsBelowAnchors = new ToggleButton('tags-below-anchors', 'Tags Below Anchors', 'Tags Above Anchors', 'fa-arrow-down', 'fa-arrow-up', false)
-    tagsBelowAnchors.button.addEventListener('click', () => {
-      tagsBelowAnchors.toggle()
-      AppState.tagsBelowAnchors = tagsBelowAnchors.state
+    const tagsAboveAnchors = new ToggleButton('tags-below-anchors', 'Tag Below Anchors', 'Tag Above Anchors', 'fa-arrow-down', 'fa-arrow-up', false)
+    tagsAboveAnchors.button.addEventListener('click', () => {
+      tagsAboveAnchors.toggle()
+      AppState.tagsAboveAnchors = tagsAboveAnchors.state
       AppState.dataChanged = true
     })
 
     flipAnchorsXButton.disable()
     flipAnchorsZButton.disable()
     showRangeSpheres.disable()
-    tagsBelowAnchors.disable()
+    // tagsAboveAnchors.disable()
 
     // Init Room
     //
