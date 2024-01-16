@@ -11,7 +11,14 @@ export default class {
   static mobileTagIntersections = {} // used for 3D positioning
   static closeEnoughDistance = 20 // cm
   static scanStopping = false
+  static dataChanged = false
+  static tagsAboveAnchors = false
+  static dataChanged = false
+  static grid = null
+  static showRangeSpheres = false
+  static cameraYShift = -100
   static sphereSolution = (o) => {
     return this.sphereSolutionOption === o || this.sphereSolutionOption === 'both'
   }
+ 
 }

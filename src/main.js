@@ -23,12 +23,6 @@ function setDotNotHelper (helper) { // eslint-disable-line no-unused-vars
   dotNetHelper = helper
 }
 
-AppState.dataChanged = false
-AppState.grid = null
-AppState.showRangeSpheres = false
-AppState.tagsAboveAnchors = false
-AppState.cameraYShift = -100
-
 AppState.scanButton = new ToggleButton('start-scan', 'Stop Scan', 'Start Scan', ['fa-spinner', 'fa-spin-pulse'], 'fa-wifi', false)
 AppState.toggleOverlayButton = new ToggleButton('toggle-overlay', 'Hide 2D Grids', 'Show 2D Grids', 'fa-border-all', 'fa-border-none', false)
 const alertText = document.getElementById('alert-text')
@@ -387,6 +381,7 @@ const s = (sketch) => {
       AppState.scanButton.toggle()
       if (AppState.scanButton.state) {
         xbit.sendStartBluetoothScanningCommand().then(() => {
+          console.log('start scanning command sent')
         }).catch((err) => {
           console.log('error sending start scanning command', err)
           AppState.scanButton.toggle()
@@ -451,7 +446,7 @@ const s = (sketch) => {
       AppState.dataChanged = true
     })
 
-    const tagsAboveAnchors = new ToggleButton('tags-below-anchors', 'Tag Below Anchors', 'Tag Above Anchors', 'fa-arrow-down', 'fa-arrow-up', false)
+    const tagsAboveAnchors = new ToggleButton('tags-below-anchors', 'Tags Below Anchors', 'Tags Above Anchors', 'fa-arrow-down', 'fa-arrow-up', false)
     tagsAboveAnchors.button.addEventListener('click', () => {
       tagsAboveAnchors.toggle()
       AppState.tagsAboveAnchors = tagsAboveAnchors.state
@@ -461,7 +456,7 @@ const s = (sketch) => {
     flipAnchorsXButton.disable()
     flipAnchorsZButton.disable()
     showRangeSpheres.disable()
-    // tagsAboveAnchors.disable()
+    tagsAboveAnchors.disable()
 
     // Init Room
     //
