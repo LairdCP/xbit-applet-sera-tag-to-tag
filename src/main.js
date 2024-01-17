@@ -453,10 +453,10 @@ const s = (sketch) => {
       AppState.dataChanged = true
     })
 
-    flipAnchorsXButton.disable()
-    flipAnchorsZButton.disable()
-    showRangeSpheres.disable()
-    tagsAboveAnchors.disable()
+    // flipAnchorsXButton.disable()
+    // flipAnchorsZButton.disable()
+    // showRangeSpheres.disable()
+    // tagsAboveAnchors.disable()
 
     // Init Room
     //
@@ -503,9 +503,9 @@ const s = (sketch) => {
       AppState.dataChanged = true
     })
 
-    roomOrientationYSlider.disabled = true
-    roomOrientationXSlider.disabled = true
-    roomOrientationZSlider.disabled = true
+    // roomOrientationYSlider.disabled = true
+    // roomOrientationXSlider.disabled = true
+    // roomOrientationZSlider.disabled = true
 
     const roomHeightInput = document.getElementById('roomHeightInput')
     roomHeightInput.value = Units.fromCm(AppState.grid.height)

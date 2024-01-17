@@ -16,6 +16,8 @@ export default {
 }
 
 export function handleAd ({ deviceAddress, ad }) {
+  if (!deviceAddress) return
+
   if (ad) {
     const hexAd = bytesToHex(ad)
     const ltvMap = parseLtvs(hexAd)
@@ -23,39 +25,30 @@ export function handleAd ({ deviceAddress, ad }) {
 
     try {
       if (ltvMap.ff) {
-        parseManufacturerData(ltvMap.ff).forEach((data) => {
-          parsedAd = Object.assign(parsedAd || {}, data)
-        })
+        parsedAd = parseManufacturerData(ltvMap.ff)
       }
     } catch (e) {
-      // console.log(e)
+      console.log(e)
+      return
     }
+    let manufacturerData = parsedAd.find((d) => d.protocolId === 12)
 
-    // Check for Laird mfg id and BT510 tilt sensor protocol ID (0xc9)
-    const ffLtv = hasLtv('ff', [0x77, 0x00, 0x0c, 0x00], ltvMap)
-    if (ffLtv) {
-      let tag
-      // Check to see if this is a new UWB tag
-      if (!deviceAddress) return
-      // if (deviceAddress.length > 13) {
-      //   deviceAddress = deviceAddress.substr(2, 12)
-      // } else {
-      //   return
-      // }
-
-      const now = Date.now()
+    if (manufacturerData) {
       if (!TagDb.isSensorFound(deviceAddress)) {
-        TagDb.tagsFound.push({ deviceAddress, lastSeen: now })
+        TagDb.tagsFound.push({
+          deviceAddress,
+          lastSeen: Date.now()
+        })
 
         const tagPos = { x: Math.sin((Math.PI / 2) + (20 * Math.PI / (TagDb.tagsFound.length + 1))) * Units.toCm(6), y: 5, z: Math.cos((Math.PI / 2) + (20 * Math.PI / (TagDb.tagsFound.length + 1))) * Units.toCm(6) }
-        tag = addMobileTag(deviceAddress)
-        // tag.setColorIndex(TagDb.tags.length - 1);
+        let tag = addMobileTag(deviceAddress)
         tag.setColorIndex(3)
         tag.position = tagPos
-        updateMobileTag(deviceAddress, ffLtv)
-        console.log('Added tag [' + tag.shortAddr + '] [BLE: ' + deviceAddress + '] [ID:' + bytesToHex(tag.longAddr) + ']')
+        tag.role = manufacturerData.flags.anchor ? 'fixed' : 'mobile'
+        updateMobileTag(deviceAddress, manufacturerData)
+        console.log('Added tag [' + tag.shortAddr + '] [BLE: ' + deviceAddress + '] [ID:' + tag.longAddr + ']')
       } else {
-        updateMobileTag(deviceAddress, ffLtv)
+        updateMobileTag(deviceAddress, manufacturerData)
         TagDb.updateSensorLastSeen(deviceAddress)
       }
       // TODO: update the database from this ad
@@ -75,55 +68,23 @@ function addMobileTag (deviceAddress) {
   return tag
 }
 
-function updateMobileTag (deviceAddress, ffLtv) {
-  let tag = null
-  for (let i = 0; i < TagDb.tags.length; i++) {
-    if (TagDb.tags[i].deviceAddress === deviceAddress) {
-      tag = TagDb.tags[i]
-      break
-    }
-  }
+function updateMobileTag (deviceAddress, manufacturerData) {
+  const tag = TagDb.tags.find(t => t.deviceAddress === deviceAddress)
   if (!tag) return
-  const v = ffLtv
 
-  if (!tag.longAddr) {
-    tag.longAddr = []
-    for (let i = 8; i < 16; i++) {
-      tag.longAddr.push(v[i])
-    }
-    tag.shortAddr = bytesToHex(tag.longAddr).substring(12)
-  }
+  tag.longAddr = manufacturerData.longAddr
+  tag.shortAddr = manufacturerData.shortAddr
 
-  // parse the ranging records starting at byte 20
-  const records = []
-  for (let i = 20; i < v.length;) {
-    const record = {}
-    record.type = v[i]
-    i++
-    record.len = v[i]
-    i++
-    record.bytes = []
-    for (let j = i; j < (i + record.len); j++) {
-      record.bytes.push(v[j])
-    }
-    i += record.len
-    if (record.len <= 0) {
-      break
-    }
-    records.push(record)
-  }
-
-  for (let i = 0; i < records.length; i++) {
-    let dist
-    switch (records[i].type) {
+  for (let i = 0; i < manufacturerData.rangingData.length; i++) {
+    switch (manufacturerData.rangingData[i].type) {
       case 0: // ranging record type
-        dist = (records[i].bytes[2] << 8) | records[i].bytes[3]
+      const dist = manufacturerData.rangingData[i].dist
         if (dist !== 65535) {
-          tag.addRange(bytesToHex([records[i].bytes[0], records[i].bytes[1]]), dist)
+          tag.addRange(manufacturerData.rangingData[i].range, dist)
         }
         break
       case 10: // LED color type
-        tag.setColorRgb((records[i].bytes[0] * 10) % 255, (records[i].bytes[1] * 10) % 255, (records[i].bytes[2] * 10) % 255)
+        tag.setColorRgb(...manufacturerData.rangingData[i].color)
         break
       default:
         break
