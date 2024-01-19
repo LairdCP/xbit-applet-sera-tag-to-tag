@@ -7,11 +7,13 @@ export class Tag {
   name
   deviceAddress = ''
   role
+  locked
   longAddr
   shortAddr
   position
   rangeFilters = {}
   rangeDb = {}
+  rangeLastSeenDb = {}
   rangeCorrectedDb = {}
   radius
   ranges = []
@@ -39,6 +41,7 @@ export class Tag {
     this.position = position
     this.role = role
     this.radius = tagRadius
+    this.locked = false
     this.setColorIndex(colorIndex)
     this.roomOrientationOffset = { x: 0, y: 0, z: 0 }
   }
@@ -235,7 +238,7 @@ export class Tag {
         buffer3d.fill(0)
         for (const k of Object.keys(this.rangeDb)) {
           const t = TagDb.getTagByShortAddress(k)
-          if (t.role === 'mobile') {
+          if (t && t.role === 'mobile') {
             buffer3d.sphere(this.rangeDb[k] - t.averageRangeError, 32, 32)
             // buffer3d.sphere(this.rangeDb[k] + t.averageRangeError, 32, 32);
           }
@@ -251,6 +254,14 @@ export class Tag {
       this.rangeFilters[remoteTagShortAddress] = new MovingAverage(10)
     }
     this.rangeDb[remoteTagShortAddress] = this.rangeFilters[remoteTagShortAddress].next(dist)
+    this.rangeLastSeenDb[remoteTagShortAddress] = Date.now()
+  }
+
+  getLastRangeFromTagSinceNow (remoteTagShortAddress) {
+    if (this.rangeLastSeenDb[remoteTagShortAddress]) {
+      return Date.now() - this.rangeLastSeenDb[remoteTagShortAddress]
+    }
+    return Number.MAX_SAFE_INTEGER
   }
 
   draw () {

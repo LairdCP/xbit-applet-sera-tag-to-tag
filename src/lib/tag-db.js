@@ -3,7 +3,6 @@ import { Units } from './units.js'
 export class TagDb {
   static tagsFound = []
   static tags = []
-  static lockedAnchors = []
 
   static clear () {
     TagDb.tags = []
@@ -50,25 +49,69 @@ export class TagDb {
     }
   }
 
-  static unlockAnchors () {
-    if (TagDb.lockedAnchors.length === 0) {
-      return
+  static getSensorLastSeenSinceNow (deviceAddress) {
+    for (const s of TagDb.tagsFound) {
+      if (s.deviceAddress === deviceAddress) {
+        return Date.now() - s.lastSeen
+      }
     }
-    for (const t of TagDb.lockedAnchors) {
-      t.role = 'mobile'
+    // return maximum JavaScript integer value
+    return Number.MAX_SAFE_INTEGER
+  }
+
+  static tagsLastRanged (t1, t2) {
+    let lastSeen = Number.MAX_SAFE_INTEGER
+    for (const k of Object.keys(t1.rangeDb)) {
+      if (k === t2.shortAddr) {
+        const ls = Date.now() - t1.rangeLastSeenDb[k]
+        if (ls < lastSeen) {
+          lastSeen = ls
+        }
+      }
+    }
+    for (const k of Object.keys(t2.rangeDb)) {
+      if (k === t1.shortAddr) {
+        const ls = Date.now() - t2.rangeLastSeenDb[k]
+        if (ls < lastSeen) {
+          lastSeen = ls
+        }
+      }
+    }
+    return lastSeen
+  }
+
+  static unlockAnchors () {
+    const tagsToRemove = []
+    for (const t of TagDb.tags) {
+      if (t.role === 'fixed') {
+        t.locked = false
+      } else if (t.role === 'mobile') {
+        tagsToRemove.push(t)
+      }
+    }
+    for (const tr of tagsToRemove) {
+      TagDb.removeTag(tr)
     }
   }
 
   static lockAnchors () {
     // keep track of this list for future calls to unlockAnchors/lockAnchors
-    if (TagDb.lockedAnchors.length === 0) {
-      for (const t of TagDb.tags) {
-        TagDb.lockedAnchors.push(t)
-        t.role = 'fixed'
+    for (const t of TagDb.tags) {
+      if (t.role === 'fixed') {
+        t.locked = true
       }
-    } else {
-      for (const t of TagDb.lockedAnchors) {
-        t.role = 'fixed'
+    }
+  }
+
+  static removeTag (tag) {
+    const idx = TagDb.tags.indexOf(tag)
+    if (idx > -1) {
+      TagDb.tags.splice(idx, 1)
+    }
+    for (let i = 0; i < TagDb.tagsFound.length; i++) {
+      if (TagDb.tagsFound[i].deviceAddress === tag.deviceAddress) {
+        TagDb.tagsFound.splice(i, 1)
+        break
       }
     }
   }
@@ -76,14 +119,21 @@ export class TagDb {
   static removeUnseenSensors () {
     const tagsToRemove = []
     const now = Date.now()
-    for (const t of TagDb.tags) {
-      if ((now - t.lastSeen) > 30000) {
-        tagsToRemove.push(t)
+    for (const t of TagDb.tagsFound) {
+      if ((now - t.lastSeen) > 10000) {
+        for (const tg of TagDb.tags) {
+          if (tg.deviceAddress === t.deviceAddress) {
+            if (tg.role === 'mobile') {
+              tagsToRemove.push(tg)
+            }
+            break
+          }
+        }
       }
     }
+
     for (const tr of tagsToRemove) {
-      const idx = TagDb.tags.indexOf(tr)
-      TagDb.tags.splice(idx, 1)
+      TagDb.removeTag(tr)
     }
   }
 }

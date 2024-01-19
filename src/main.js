@@ -1,8 +1,7 @@
-/* globals p5 */
 /* Sera Tag-2-Tag application script */
 
 import { xbit, ToggleButton } from '@bennybtl/xbit-lib'
-import p5 from 'p5/lib/p5';
+import p5 from 'p5/lib/p5'
 
 import { TagDb } from './lib/tag-db.js'
 import {
@@ -404,22 +403,22 @@ const s = (sketch) => {
       AppState.lockAnchorsButton.toggle()
       if (AppState.lockAnchorsButton.state) {
         TagDb.lockAnchors()
-        flipAnchorsXButton.enable()
-        flipAnchorsZButton.enable()
-        showRangeSpheres.enable()
-        tagsAboveAnchors.enable()
-        roomOrientationYSlider.disabled = false
-        roomOrientationXSlider.disabled = false
-        roomOrientationZSlider.disabled = false
+        // flipAnchorsXButton.enable()
+        // flipAnchorsZButton.enable()
+        // showRangeSpheres.enable()
+        // tagsAboveAnchors.enable()
+        // roomOrientationYSlider.disabled = false
+        // roomOrientationXSlider.disabled = false
+        // roomOrientationZSlider.disabled = false
       } else {
         TagDb.unlockAnchors()
-        flipAnchorsXButton.disable()
-        flipAnchorsZButton.disable()
-        showRangeSpheres.disable()
-        tagsAboveAnchors.disable()
-        roomOrientationYSlider.disabled = true
-        roomOrientationXSlider.disabled = true
-        roomOrientationZSlider.disabled = true
+        // flipAnchorsXButton.disable()
+        // flipAnchorsZButton.disable()
+        // showRangeSpheres.disable()
+        // tagsAboveAnchors.disable()
+        // roomOrientationYSlider.disabled = true
+        // roomOrientationXSlider.disabled = true
+        // roomOrientationZSlider.disabled = true
       }
     })
 
@@ -708,6 +707,10 @@ const s = (sketch) => {
     }
 
     tagPositionUpdateTimer = setInterval(() => {
+      // Remove unseen tags if scanning and results not seen from it recently
+      if (AppState.scanButton.state) {
+        TagDb.removeUnseenSensors()
+      }
       // Update position of tags
       TagScene.updateTagPositions()
       AppState.dataChanged = true
@@ -794,7 +797,7 @@ const myp5 = new p5(s) // eslint-disable-line no-unused-vars, new-cap
 const eventListenerHandler = (data) => {
   // if (!AppState.scanButton.state) return
   if (!AppState.scanButton.state && !AppState.scanStopping) {
-      AppState.scanButton.setOn()
+    AppState.scanButton.setOn()
   }
   if (AppState.scanButton.state) {
     TagScene.handleAd(data.params)

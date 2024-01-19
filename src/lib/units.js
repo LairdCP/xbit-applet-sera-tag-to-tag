@@ -80,6 +80,9 @@ export class Units {
       }
     }
     if (measurementCount === 0) return 0
+    if (measurementCount === 1) {
+      console.log('Only one measurement found between tags ' + t1.name + ' and ' + t2.name + ' - ' + dist1 + ' ' + dist2)
+    }
     return (dist1 + dist2) / measurementCount // return the average reading between the nodes
   }
 
