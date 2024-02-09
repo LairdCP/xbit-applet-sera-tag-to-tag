@@ -121,6 +121,11 @@ function updateMobileTag (deviceAddress, ffLtv) {
     records.push(record)
   }
 
+  const processColorByte = (colorByte) => {
+    // cap intensity at 160
+    return Math.min(colorByte * 10, 160)
+  }
+
   for (let i = 0; i < records.length; i++) {
     let dist
     switch (records[i].type) {
@@ -131,7 +136,11 @@ function updateMobileTag (deviceAddress, ffLtv) {
         }
         break
       case 10: // LED color type
-        tag.setColorRgb((records[i].bytes[0] * 10) % 255, (records[i].bytes[1] * 10) % 255, (records[i].bytes[2] * 10) % 255)
+        tag.setColorRgb(
+          processColorByte(records[i].bytes[0]),
+          processColorByte(records[i].bytes[1]),
+          processColorByte(records[i].bytes[2])
+        )
         break
       default:
         break

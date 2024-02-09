@@ -1,7 +1,7 @@
 {
   "title": "Sera NX040 Tag-to-Tag",
   "name": "sera-tag-to-tag",
-  "version": "1.5.0",
+  "version": "1.5.2",
   "description": "3D Ranging Demo",
   "config": {
     "full_description": "A 3D visualization for display of ranging session data between 2 or more Sera NX040 DVK boards. Sera NX040 DVK boards must be programmed with the uwb_ranging_demo script from the Canvas Python Sample Apps repository. If fewer than 4 DVKs are used, the 3D position is arbitrarily chosen for display purposes only.",
